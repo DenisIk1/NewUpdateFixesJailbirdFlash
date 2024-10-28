@@ -1,8 +1,12 @@
 ﻿using Exiled.API.Extensions;
 using Exiled.API.Features;
+using Exiled.API.Features.Roles;
+using Exiled.API.Features.Spawn;
 using Exiled.Events.EventArgs.Player;
 using MEC;
 using PlayerRoles;
+using PlayerRoles.FirstPersonControl.Spawnpoints;
+using System.Linq;
 
 namespace Scp3114CustomSpawn
 {
@@ -10,18 +14,15 @@ namespace Scp3114CustomSpawn
     {
         public void OnSpawning(SpawningEventArgs ev)
         {
-            if(ev.Player.Role.Type == PlayerRoles.RoleTypeId.Scp3114 && (Round.ElapsedTime.TotalSeconds < 2 || MainPlugin.Instance.Config.Debug))
+            if(ev.Player.Role.Type == PlayerRoles.RoleTypeId.Scp3114)
             {
-                if(Server.PlayerCount < MainPlugin.Instance.Config.MinPlayers)
+                ev.Position = RoleTypeId.Scp173.GetRandomSpawnLocation().Position;
+                if ((Round.ElapsedTime.TotalSeconds < 2 || MainPlugin.Instance.Config.Debug) && Server.PlayerCount < MainPlugin.Instance.Config.MinPlayers)
                 {
                     Timing.CallDelayed(0.01f, () =>
                     {
                         ev.Player.Role.Set(MainPlugin.Instance.Config.RolesToSpawn.GetRandomValue());
                     });
-                }
-                else
-                {
-                    ev.Position = RoleTypeId.Scp173.GetRandomSpawnLocation().Position;
                 }
             }
         }
